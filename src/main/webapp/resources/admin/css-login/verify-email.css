@@ -1,0 +1,96 @@
+  body{
+      padding: 0;
+      margin: 0;
+      background-color: #60A3BC;
+  }
+  span.hint {
+	margin-top: 13px;
+	font-size: 12px;
+	font-style: italic;
+  }
+  
+  span.hint::before {
+	content: "* ";
+  }
+
+h3{
+    margin: 0;
+    background-color: wheat;
+    padding-left: 150px;
+}
+  input#password-input {
+	position: relative;
+	font-size: 16px;
+	z-index: 2;
+	border: none;
+	background: transparent;
+	width: 300px;
+	text-indent: 9px;
+	letter-spacing: 25.6px;
+	font-family: Courier;
+  }
+  
+  input#password-input:focus {
+	outline: none;
+    margin-top: 20px;
+  }
+  #verify-email{
+      margin-top: 20px;
+    margin-left: -100px;
+    font-size: 16px;
+    font-weight: 560;
+    margin-bottom: 30px;
+   }
+
+.container{
+    margin-top: 200px !important;
+    margin: 0 auto;
+    width: 660px;
+    height: 200px;
+    border: 2px solid rgb(199, 3, 3);
+    background-color: white;
+    border-radius: 6px;
+}
+button{
+    margin-left: 260px;
+    height: 30px;
+    width: 80px;
+    background-color: tomato;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+
+}
+button:hover{
+    background-color: rgb(243, 50, 17);
+
+}
+fieldset {
+	color: #555;
+	font-family: sans-serif;
+	border: none;
+	position: relative;
+	margin-left: 180px;
+  }
+  
+  fieldset > * {
+	display: block;
+  }
+  #verify-email{
+   margin-left: -100px;
+   font-size: 16px;
+   font-weight: 560;
+  }
+  fieldset::after {
+	content: "___  ___  ___  ___  ___  ___";
+	display: block;
+	position: absolute;
+	top: 80px;
+	white-space: pre;
+  }
+  
+  label{
+	font-size: 14px;
+	margin-bottom: 20px;
+  }

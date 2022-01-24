@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- APlayer CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css"/>
+    <link rel="stylesheet" href="/resources/css/home.css">
+    <script type="text/javascript" src="/resources/js/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="/resources/css/sweetalert2.min.css">
+    <script type="text/javascript" src="/resources/js/popper-v1.16.0.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <style>
+        #viewHighlightSong {
+            overflow: auto;
+            overflow-x: hidden;
+            height: 610px;
+        }
+
+        #navbarSupportedContent {
+            margin-left: 270px !important;
+        }
+
+        #createPlayList {
+            height: 40px;
+            margin-left: 20px;
+        }
+
+        #playListList {
+            border: 2px rgb(20, 0, 133) solid;
+            height: 300px;
+            width: 900px;
+            margin-top: 80px;
+            overflow: auto;
+            overflow-x: hidden;
+            border-radius: 5px;
+            margin-left: 120px;
+        }
+
+        .playlistCard {
+            background-color: #FF3CAC;
+            background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+            margin-bottom: 15px;
+            width: 280px;
+            margin-left: 12px;
+            border-radius: 5px;
+            color: white;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.6s;
+        }
+
+        .playlistCard:hover {
+            color: yellow;
+            transform: scale(110%);
+            z-index: 1;
+        }
+
+        .middle {
+            transition: .5s ease;
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+
+        .playlistCard:hover .middle {
+            opacity: 1;
+        }
+
+        .btnhide {
+            margin-right: -145px;
+        }
+
+        .btnFadeHide {
+            transition: .5s ease;
+            opacity: 0;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .song-card {
+            transition: 0.6s;
+        }
+
+        .song-card:hover .btnFadeHide {
+            opacity: 1;
+            z-index: 1;
+        }
+
+    </style>
+
+    <title>TQT Music Player</title>
+
+</head>
+<body>
+
+<div class="main">
+
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                TQT Player
+            </a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary" id="homeBtn">Home</button>
+                <button type="button" class="btn btn-secondary" id="allSongBtn">All Song</button>
+                <button type="button" class="btn btn-secondary" id="myPlaylistBtn">My Playlist</button>
+            </div>
+            <div class="form-inline">
+                <input class="form-control mr-sm-2" type="search" id="keySearchIp" placeholder="Search" aria-label="Search">
+                <button type="button" class="btn btn-primary" id="searchBtn"> Search</button>
+
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-display="static" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                           th:text="${userLogin.fullName}">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg-right" aria-labelledby="navbarDropdown">
+                            <input type="hidden" style="display: none" th:value="${userLogin.id}" id="IdUserLogin">
+                            <h6 class="dropdown-header">Dropdown header</h6>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="/logout">LogOut</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <h4 id="titlePage">HightLights Songs</h4>
+        <div id="createPlayListDiv">
+
+        </div>
+        <div class="row" id="viewHighlightSong">
+        </div>
+
+    </div>
+</div>
+
+<div id="aplayer"></div>
+<!----------------------------------------------------MODAL---------------------------------------------->
+
+
+<div class="modal fade" id="createPlayListModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" >Create New PlayList</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">NamePlaylist</span>
+                    </div>
+                    <input type="text" class="form-control" id="newPlaylistName" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="createPlayListbtn" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addSongToPlayListModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Song To Playlist</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="idSongaddToPl">
+                <label for="selectPlaylist">Select the Playlist you want to add songs to</label>
+                <select name="selectPlaylist" id="selectPlaylist"></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="addSongToPlaylistbtn" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!----------------------------------------------------END-MODAL---------------------------------------------->
+<!-- Jquery Link -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<!-- Bootstrap Link -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<!-- APlayer Jquery link -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<script>
+
+    var listAllSong = [];
+    var listAllPlaylist = [];
+
+
+    // <!--	 Defenid Object	-->
+    // class Customer {
+    // 	constructor(id, songName, singerName, songPath, logoPath, deleted, countListens) {
+    // 		this.id = id;
+    // 		this.songName = songName;
+    // 		this.singerName = singerName;
+    // 		this.songPath = songPath;
+    // 		this.logoPath = logoPath;
+    // 		this.deleted = deleted;
+    // 		this.countListens = countListens;
+    // 	}
+    // }
+
+    class SongPl {
+        constructor(name, artist, url, cover) {
+            this.name = name;
+            this.artist = artist;
+            this.url = url;
+            this.cover = cover;
+
+        }
+    }
+
+    class Song {
+        constructor(id, songName, singerName, songPath, logoPath, deleted, countListens) {
+            this.id = id;
+            this.songName = songName;
+            this.singerName = singerName;
+            this.songPath = songPath;
+            this.logoPath = logoPath;
+            this.deleted = deleted;
+            this.countListens = countListens;
+        }
+    }
+
+
+    class Playlist {
+        constructor(id, playlistName, deleted) {
+            this.id = id;
+            this.playlistName = playlistName;
+            this.deleted = deleted;
+        }
+    }
+
+
+    getAllSong();
+    // setInterval(function(){
+    //     getAllSong();
+    // }, 60000);
+    //------------------Ajax API--------------------------------//
+
+    function getAllSong() {
+        listAllSong = [];
+        $.ajax({
+            type: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: "/api/song",
+        }).done(function (data) {
+            $.each(data, (index, item) => {
+                let song = new Song(item.id, item.songName, item.singerName, item.songPath, item.logoPath, item.deleted, item.countListens)
+                listAllSong.push(song);
+            })
+            showListSongHightlight();
+            console.log(listAllSong);
+        }).fail(function () {
+            showErrorAlert("Error Loading Song, Try Again")
+        })
+    }
+
+    function getAllPlaylist() {
+        listAllPlaylist = [];
+        $.ajax({
+            type: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: "/api/playlist/getPlaylist",
+        }).done(function (data) {
+            console.log(data);
+            $.each(data, (index, item) => {
+                addPlaylistCard(item)
+            })
+            handlerClickPlaylistCard()
+        }).fail(function () {
+            showErrorAlert("Error Loading Song, Try Again")
+        })
+    }
+
+
+    $("#createPlayListbtn").on("click", function () {
+        let namePlaylist = $('#newPlaylistName').val()
+        let newPlaylist = new Playlist();
+        newPlaylist.playlistName = namePlaylist;
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: "api/playlist/create",
+            data: JSON.stringify(newPlaylist)
+        }).done(function (data) {
+            addPlaylistCard(data)
+        }).fail(function () {
+            alert("Error")
+        })
+        $('#createPlayListModal').modal('hide');
+        $('#newPlaylistName').val("");
+    });
+
+    $("#addSongToPlaylistbtn").click(function () {
+        let playListId = $('#selectPlaylist').val();
+        let songId = $('#idSongaddToPl').val();
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: "/api/playlist/addSongToPlaylist?songId="+songId+"&playlistId="+playListId,
+        }).done(function (data) {
+            $('#addSongToPlayListModal').modal('hide');
+            showSuccessAlert("Add Song To Playlist Success")
+        }).fail(function () {
+            showErrorAlert("Please, Try Again")
+        })
+
+
+    });
+
+    $("#searchBtn").on("click", function () {
+        let keySearch = $('#keySearchIp').val()
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: "api/song/search?keySearch="+keySearch,
+        }).done(function (data) {
+            $('#viewHighlightSong').html("");
+            $.each(data, (index, item) => {
+                addPosterSong(item);
+            });
+        }).fail(function () {
+           showErrorAlert("Please Try Again")
+        })
+    });
+
+    function handlerClickPlaylistCard() {
+        $(".listensPlaylistBtn").on("click", function () {
+            var dataId = $(this).attr('data-id')
+           playPlayList(dataId);
+        });
+
+        $(".removePlaylistBtn").on("click", function () {
+            var dataId = $(this).attr('data-id')
+            removePlayList(dataId);
+            $(this).remove();
+        });
+    }
+
+  function removePlayList(id) {
+      $.ajax({
+          type: "GET",
+          url: "/api/playlist/delete/" + id,
+      }).done(function () {
+        showSuccessAlert("Remove Playlist Success")
+      }).fail(function () {
+          showErrorAlert("Error loading song, please try again")
+      });
+  }
+
+       function playPlayList(dataId) {
+        let songInPlaylist = [];
+           $.ajax({
+               type: "GET",
+               url: "/api/playlist/get/" + dataId,
+           }).done(function (data) {
+               console.log(data)
+               $.each(data, (index, item) => {
+                  let songAP = new SongPl();
+                   songAP.name = item.songName;
+                   songAP.artist = item.singerName;
+                   songAP.url = formatUrl(item.songPath);
+                   songAP.cover =  formatUrl(item.logoPath);
+                   songInPlaylist.push(songAP)
+
+               });
+
+               let ap = new APlayer({
+                   container: document.getElementById('aplayer'),
+                   listFolded: true,
+                   audio: songInPlaylist,
+               });
+               // and now i use aplayer switch function see
+               ap.list.switch(0); //this is static id but i use dynamic
+               // aplayer play function
+               // when i click any song to play
+               ap.play();
+               // click to slideUp player see
+               $("#aplayer").addClass('showPlayer');
+           }).fail(function () {
+               showErrorAlert("Error loading song, please try again")
+           });
+       }
+
+
+
+        function getPlaylistTo() {
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            type: "GET",
+            //tên API
+            url: "/api/playlist/getPlaylist",
+            //xử lý khi thành công
+            success: function (data) {
+                let str;
+                $.each(data, (index, item) => {
+                        str += `<option value="${item.id}">${item.playlistName}</option>`;
+                });
+                $("#selectPlaylist").html(str)
+            }
+        });
+    }
+
+
+
+
+    //------------------------------------------------END API-------------------------------------///
+
+    //----------------------------------Function Display---------------------------------------//
+
+
+    function showListSongHightlight() {
+        let topSong = findTopSong();
+        for (let i = 0; i < topSong.length; i++) {
+            console.log(top[i]);
+            addPosterSong(topSong[i])
+        }
+        handlerClickPoster();
+
+    }
+
+
+    $("#allSongBtn").on("click", function () {
+        $('#playListList').replaceWith(`<div class="row" id="viewHighlightSong">
+        </div>`);
+        $('#createPlayListDiv').html("")
+        let quantity = 0;
+        $('#viewHighlightSong').html("");
+        for (let i = 0; i < listAllSong.length; i++) {
+            quantity++;
+            $('#viewHighlightSong').append(insertDataToPoster(listAllSong[i]));
+        }
+        $('#titlePage').html("All Song | Quantity: " + quantity);
+        handlerClickPoster();
+    });
+
+
+    $("#homeBtn").on("click", function () {
+        $('#createPlayListDiv').html("")
+        $('#playListList').replaceWith(`<div class="row" id="viewHighlightSong">
+        </div>`);
+        $('#viewHighlightSong').html("");
+        showListSongHightlight();
+        $('#titlePage').html("HighLight Song");
+    });
+
+    $("#myPlaylistBtn").on("click", function () {
+        $('#titlePage').html("My PlayList");
+        $('#createPlayListDiv').html(getHtmlPlayList())
+        $('#viewHighlightSong').replaceWith(getHtmlListPlaylist());
+        getAllPlaylist();
+    });
+
+
+    //-----------------------------END-----Function Display---------------------------------------//
+
+    // -------------------------------------Function Utils------------------------///
+
+    function getSongByIdFromArray(id) {
+        for (let i = 0; i < listAllSong.length - 1; i++) {
+            if (listAllSong[i].id === id) {
+                return listAllSong[i];
+            }
+        }
+        return null;
+    }
+
+
+    function findTopSong() {
+        let topSong = [];
+        let count = 0;
+        for (let i = listAllSong.length - 1; i >= 0; i--) {
+            topSong.push(listAllSong[i]);
+            count++;
+            if (count === 8) {
+                break;
+            }
+        }
+        return topSong;
+    }
+
+
+    function addPosterSong(song) {
+        $('#viewHighlightSong').append(insertDataToPoster(song));
+    }
+
+    function addPlaylistCard(playlist) {
+        $('#playListList').append(insertDataPlaylist(playlist));
+    }
+
+    function insertDataToPoster(song) {
+        return `
+    <div class="col-md-3 song-card">
+        <a href="#" class="album-poster" data-id="${song.id}">
+        <img src="${song.logoPath}">
+        </a>
+          <div class="btnFadeHide">
+              <div class="btnSonghide">
+               <button class="btn btn-success playSongBtn"  data-id="${song.id}">Play</button>
+                <button  class="btn btn-primary addSongToPlaylist"   data-id="${song.id}">Add To PlayList</button>
+              </div>
+         </div>
+        <h4>${song.songName}</h4>
+        <p>${song.singerName}</p>
+     </div>`
+    }
+
+    function insertDataPlaylist(playlist) {
+        return `	<div class="col-md-4 playlistCard">
+                        <h4>${playlist.playlistName}</h4>
+                        <div class="middle">
+                        <div class="btnhide">
+                           <button class="btn btn-success listensPlaylistBtn"  data-id="${playlist.id}">Play</button>
+                           <button  class="btn btn-danger removePlaylistBtn"  data-id="${playlist.id}">Remove</button>
+                        </div>
+                          </div>
+                        </div>
+                        </div>`
+    }
+
+    function formatUrl(url) {
+        return url.replace(/\\/g, '/');
+    }
+
+    function showSuccessAlert(t) {
+        Swal.fire({
+            icon: 'success',
+            title: t,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+    function showErrorAlert(t) {
+        Swal.fire({
+            icon: 'error',
+            title: t,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
+
+    function getHtmlPlayList() {
+        return `
+   <button  type="button" class="btn btn-success" id="createPlayList" data-toggle="modal" data-target="#createPlayListModal">Create PlayList</button>
+    `
+    }
+
+    function getHtmlListPlaylist() {
+        return `
+<div id="playListList">
+
+</div>
+    `
+    }
+
+
+    // ---------------------------------END ----Function Utils------------------------///
+    // NOW I CLICK album-poster TO GET CURRENT SONG ID
+    // $(".album-poster").on('click', function (e) {
+    //     var dataSwitchId = $(this).attr('data-id');
+    //     //console.log(dataSwitchId);
+    //
+    //     // and now i use aplayer switch function see
+    //     ap.list.switch(dataSwitchId); //this is static id but i use dynamic
+    //
+    //     // aplayer play function
+    //     // when i click any song to play
+    //     ap.play();
+    //
+    //     // click to slideUp player see
+    //     $("#aplayer").addClass('showPlayer');
+    // });
+
+
+    function handlerClickPoster() {
+        $(".playSongBtn").on('click', function (e) {
+            var dataId = $(this).attr('data-id')
+            //console.log(dataSwitchId);
+            $.ajax({
+                type: "GET",
+                url: "/api/song/get/" + dataId,
+            }).done(function (data) {
+
+                console.log(data)
+                let ap = new APlayer({
+                    container: document.getElementById('aplayer'),
+                    listFolded: true,
+                    audio: [
+                        {
+                            name: data.songName,
+                            artist: data.singerName,
+                            url: formatUrl(data.songPath),
+                            cover: formatUrl(data.logoPath)
+                        }]
+                });
+                // and now i use aplayer switch function see
+                ap.list.switch(0); //this is static id but i use dynamic
+                // aplayer play function
+                // when i click any song to play
+                ap.play();
+                // click to slideUp player see
+                $("#aplayer").addClass('showPlayer');
+            }).fail(function () {
+                showErrorAlert("Error loading song, please try again")
+            });
+        });
+
+        $(".addSongToPlaylist").on("click", function () {
+            var dataId = $(this).attr('data-id')
+            $('#addSongToPlayListModal').modal("show");
+            $('#idSongaddToPl').val(dataId)
+            getPlaylistTo();
+        });
+
+
+
+    }
+
+
+    // let ap = new APlayer({
+    //     container: document.getElementById('aplayer'),
+    //     listFolded: true,
+    //     audio: [
+    //         {
+    //             name: 'Invisible Beauty',
+    //             artist: 'Artist Name',
+    //             url: '/resources/archives/music/thethai.mp3',
+    //             cover: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'
+    //         },
+    //         {
+    //             name: 'Truyền Thái Y',  // SONG NAME
+    //             artist: 'Huy', //ARTIST NAME
+    //             url: '/resources/archives/music/truyenthaiy.mp3', // PATH NAME AND SONG URL
+    //             cover: 'resources/archives/logo/anh5.jpg' // COVER IMAGE
+    //         },
+    //         // {
+    //         //     name: 'Liquid Time',
+    //         //     artist: 'Artist Name',
+    //         //     url: 'source/liquid_time.mp3',
+    //         //     cover: 'https://images.pexels.com/photos/838696/pexels-photo-838696.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+    //         // },
+    //         // {
+    //         //     name: 'Silky Smooth',
+    //         //     artist: 'Artist Name',
+    //         //     url: 'source/silky_smooth.mp3',
+    //         //     cover: 'https://images.pexels.com/photos/1370545/pexels-photo-1370545.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+    //         // },
+    //
+    //
+    //     ]
+    // });
+</script>
+
+</body>
+</html>
