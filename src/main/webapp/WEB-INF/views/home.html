@@ -101,6 +101,37 @@
             z-index: 1;
         }
 
+        #viewPlaylist{
+            height: 460px;
+            width: 200px;
+            border: 2px rgb(163, 0, 136) solid;
+            float: right;
+            margin-right: -170px;
+            margin-top: -380px;
+            border-radius: 4px;
+        }
+
+        .trSong{
+          font-weight: 700;
+          background-color: yellowgreen;
+          border-radius:5px;
+        
+        }
+        #viewListSong{
+            margin-left: 20px;
+            
+        }
+
+        .btnRemoveSong{
+            margin-left: 7px;
+            height: 20px;
+            background-color: rgb(163, 0, 0);
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 4px;
+        }
+
     </style>
 
     <title>TQT Music Player</title>
@@ -151,9 +182,35 @@
         <div id="createPlayListDiv">
 
         </div>
-        <div class="row" id="viewHighlightSong">
+        <!-- <div class="row" id="viewHighlightSong">
+        </div> -->
+        <div id="playListList">
+
         </div>
 
+        <div id="viewPlaylist">
+         <h4 style="text-align: center; background-color: rgb(0, 172, 57); margin-top: 0;">List Song</h4>
+         <table id="viewListSong" border="1">
+             <tr class="trSong">
+                 <td >
+                     <h5>Anh Thuong Em Nhat</h5> 
+                 </td>
+                 <td><button class="btnRemoveSong">X</button></td>
+             </tr>
+             <tr class="trSong">
+                <td >
+                    <h5>Anh Thuong Em Nhat</h5> 
+                </td>
+                <td><button class="btnRemoveSong">X</button></td>
+            </tr>
+            <tr class="trSong">
+                <td >
+                    <h5>Anh Thuong Em Nhat</h5> 
+                </td>
+                <td><button class="btnRemoveSong">X</button></td>
+            </tr>
+         </table>
+        </div>
     </div>
 </div>
 
@@ -274,7 +331,7 @@
     }
 
 
-    getAllSong();
+    // getAllSong();
     // setInterval(function(){
     //     getAllSong();
     // }, 60000);
